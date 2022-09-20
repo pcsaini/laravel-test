@@ -37,7 +37,54 @@ class CreateCinemaSchema extends Migration
      */
     public function up()
     {
-        throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
+        Schema::create('movies', function($table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->date('release_date');
+            $table->test('about');
+            $table->integer('duration')->comment('In Minuets');
+            $table->timestamps();
+        });
+
+        Schema::create('shows', function($table) {
+            $table->increments('id');
+            $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
+            $table->string('location');
+            $table->time('time');
+            $table->timestamps();
+        });
+
+        Schema::create('pricing', function($table) {
+            $table->increments('id');
+            $table->foreign('show_id')->references('id')->on('shows')->onDelete('cascade');
+            $table->decimal('price', 10,2);
+            $table->string('seating_type');
+            $table->decimal('premium_percentage', 5,2);
+            $table->timestamps();
+        });
+
+        Schema::create('seats', function($table) {
+            $table->increments('id');
+            $table->string('location');
+            $table->foreign('show_id')->references('id')->on('shows')->onDelete('cascade');
+            $table->string('seating_type');
+            $table->string('seat_number');
+            $table->decimal('price', 10,2);
+            $table->string('position');
+            $table->boolean('available')->defalt(false);
+            $table->timestamps();
+        });
+
+        Schema::create('sittings', function($table) {
+            $table->increments('id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
+            $table->foreign('show_id')->references('id')->on('shows')->onDelete('cascade');
+            $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
+            $table->string('price');
+            $table->time('time');
+            $table->timestamps();
+        });
     }
 
     /**
